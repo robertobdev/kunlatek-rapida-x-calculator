@@ -218,9 +218,9 @@ export default function Home() {
           value={formatPrice(kunlatek)}
         />
         <OrderSummaryItem label="Valor por dev"
-          tooltipLabel={`Valor total: ${formatPrice(devGross * Founders)} `} value={formatPrice(devGross)} />
-        <OrderSummaryItem label="Valor gerenciamento" value={formatPrice(managerGross)} />
-        <OrderSummaryItem label="Valor captação" value={formatPrice(acquireGross)} />
+          tooltipLabel={`Valor total: ${formatPrice(devGross * Founders)} para 3 devs`} value={formatPrice(devGross)} />
+        <OrderSummaryItem label="Valor gerenciamento" tooltipLabel='Valor Bruto' value={formatPrice(managerGross)} />
+        <OrderSummaryItem label="Valor captação" tooltipLabel='Valor Bruto' value={formatPrice(acquireGross)} />
 
         <OrderSummaryItem
           label="Imposto(INSS)"
