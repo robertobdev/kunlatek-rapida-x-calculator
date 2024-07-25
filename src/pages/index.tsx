@@ -10,7 +10,7 @@ import {
   Text
 } from '@chakra-ui/react';
 import * as React from 'react';
-import { OrderSummaryItem } from './components/order-summary-item';
+import { OrderSummaryItem } from '../components/order-summary-item';
 interface CalculateGrossValues {
   _kunlatek: number;
   _devGross: number;
