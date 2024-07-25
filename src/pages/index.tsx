@@ -98,7 +98,7 @@ export default function Home() {
 
     const _inssRaw = _userGross * 0.2;
     const _inss = _inssRaw < InssLimit ? _inssRaw : InssLimit;
-    console.log(_userGross);
+
     return {
       _kunlatek,
       _devGross,
