@@ -92,7 +92,6 @@ export default function Home() {
       acquire: grossMinusGovermentFeeMinusKunlatekFee * ACQUIRE_PERCENT,
       manager: grossMinusGovermentFeeMinusKunlatekFee * MANGAER_PERCENT,
     };
-    console.log(grossMinusGovermentFeeMinusKunlatekFee);
 
     Object.keys(switchs).forEach((item: string) => {
       if (switchs[item as keyof Switchs]) {
