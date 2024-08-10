@@ -14,29 +14,24 @@ import {
 import Head from 'next/head';
 import * as React from 'react';
 import { OrderSummaryItem } from '../components/order-summary-item';
-interface CalculateGrossValues {
-  _kunlatek: number;
-  _devGross: number;
-  _managerGross: number;
-  _acquireGross: number;
-  _inss: number;
-  _net: number;
-  _issPisCofins: number;
-  _isDev: boolean;
-  _isAcquire: boolean;
-  _isManager: boolean;
-}
 
 type Switchs = {
   dev: boolean;
   acquire: boolean;
   manager: boolean;
 };
+
 type Discounts = {
   govermentIssPisConfins: number;
   kunlatek: number;
   inss: number;
+} & Irrf;
+
+type Irrf = {
+  irrf: number;
+  refIrrf: string;
 };
+
 type Details = {
   dev: number;
   acquire: number;
@@ -63,11 +58,14 @@ export default function Home() {
   });
 
   const [grossInput, setGrossInput] = React.useState<string>('');
+  const [showDetails, setShowDetails] = React.useState<boolean>(false);
 
   const [discounts, setDiscounts] = React.useState<Discounts>({
     govermentIssPisConfins: 0,
     kunlatek: 0,
-    inss: 0
+    inss: 0,
+    irrf: 0,
+    refIrrf: ''
   });
   const [net, setNet] = React.useState(0);
 
@@ -77,6 +75,32 @@ export default function Home() {
 
   const handleGrossInput = (value: string) => {
     setGrossInput(value);
+  };
+
+  const calculateIrrf = (net: number): Irrf => {
+    let irrf = 0;
+    let refIrrf = '';
+    if (net > 0 && net < 2259.20) {
+      irrf = 0;
+      refIrrf = 'isento';
+    } else if (net > 2259.21 && net < 2826.65) {
+      irrf = net * (7.5 / 100) - 158.40;
+      refIrrf = '7.5%';
+    } else if (net > 2826.66 && net < 3751.05) {
+      irrf = net * (15 / 100) - 370.40;
+      refIrrf = '15%';
+    } else if (net > 3751.06 && net < 4664.68) {
+      irrf = net * (22.5 / 100) - 651.73;
+      refIrrf = '22.5%';
+    } else if (net > 4664.68) {
+      irrf = net * (27.5 / 100) - 884.96;
+      refIrrf = '27.5%';
+    }
+
+    return {
+      irrf,
+      refIrrf
+    };
   };
 
   React.useEffect(() => {
@@ -96,19 +120,29 @@ export default function Home() {
     Object.keys(switchs).forEach((item: string) => {
       if (switchs[item as keyof Switchs]) {
         net += _details[item as keyof Details];
+        setShowDetails(true);
       }
     });
 
+    if (!net) {
+      net = grossMinusGovermentFeeMinusKunlatekFee;
+      setShowDetails(false);
+    }
+
     const _inssRaw = net * 0.2;
     const inss = _inssRaw < INSS_LIMIT ? _inssRaw : INSS_LIMIT;
+    const netMinusInss = net - inss;
+    const { irrf, refIrrf } = calculateIrrf(netMinusInss);
 
     setDiscounts({
       govermentIssPisConfins,
       kunlatek,
-      inss
+      inss,
+      irrf,
+      refIrrf
     });
     setDetails(_details);
-    setNet(net - inss);
+    setNet(netMinusInss - irrf);
 
   }, [switchs, grossInput]);
 
@@ -163,10 +197,9 @@ export default function Home() {
 
           <SwitchComponent title="Você gerenciará o projeto?" handleSwitch={handleSwitchs} isChecked={switchs.manager} type='manager' ></SwitchComponent>
 
-          <DiscountsComponent inss={discounts.inss} kunlatek={discounts.kunlatek} kunlatekFee={KUNLATEK_FEE} issPisConfins={discounts.govermentIssPisConfins}></DiscountsComponent>
+          <DiscountsComponent inss={discounts.inss} kunlatek={discounts.kunlatek} kunlatekFee={KUNLATEK_FEE} issPisConfins={discounts.govermentIssPisConfins} irrf={discounts.irrf} refIrrf={discounts.refIrrf}></DiscountsComponent>
 
-          <DetailsComponent dev={details.dev} acquire={details.acquire} manager={details.manager} founders={FOUNDERS}></DetailsComponent>
-
+          {showDetails ? <DetailsComponent dev={details.dev} acquire={details.acquire} manager={details.manager} founders={FOUNDERS}></DetailsComponent> : <></>}
 
           <Flex justify="space-between">
             <Text fontSize="lg" color="#FFFFFF" fontWeight="semibold">
