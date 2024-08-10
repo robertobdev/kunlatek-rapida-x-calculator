@@ -7,8 +7,10 @@ type DiscountsComponentProps = {
   kunlatekFee: number;
   kunlatek: number;
   inss: number;
+  irrf: number;
+  refIrrf: string;
 };
-export const DiscountsComponent = ({ issPisConfins, kunlatekFee, kunlatek, inss }: DiscountsComponentProps) => {
+export const DiscountsComponent = ({ issPisConfins, kunlatekFee, kunlatek, inss, irrf, refIrrf }: DiscountsComponentProps) => {
   return (
     <Accordion allowToggle className="text-white">
       <AccordionItem className="border-none">
@@ -38,6 +40,12 @@ export const DiscountsComponent = ({ issPisConfins, kunlatekFee, kunlatek, inss 
             tooltipLabel="INSS incide sob o valor bruto do dev e é fixado em 20% com teto de R$ 1400,00"
             isNegativeValue={true}
             value={formatPrice(inss * -1)}
+          />
+          <OrderSummaryItem
+            label="Imposto de renda(IRRF)"
+            tooltipLabel={`Calculo incide sobre o valor bruto - INSS (Alíquota: ${refIrrf})`}
+            isNegativeValue={true}
+            value={formatPrice(irrf * -1)}
           />
         </AccordionPanel>
       </AccordionItem>
